@@ -9,7 +9,7 @@ import java.sql.*;
 
 public class Conexao {
     final private String driver= "com.mysql.jdbc.Driver";
-    final private String url =  "jdbc://localhost/clientes":
+    final private String url =  "jdbc://localhost/clientes";
     final private String usuario = "root"; 
     final private String senha = "";
     private Connection conexao;
@@ -31,6 +31,7 @@ public class Conexao {
             JOptionPane.showMessageDialog(null, "Fonte de dados não localizada!"+Fonte, "Mensagem do Programa", JOptionPane.INFORMATION_MESSAGE);
             result = false;
         }
+     return result;
     }
     
     public void desconecta(){
