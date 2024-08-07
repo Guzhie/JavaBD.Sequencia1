@@ -8,8 +8,8 @@ import javax.swing.JOptionPane;
 import java.sql.*;
 
 public class Conexao {
-    final private String driver= "com.mysql.jdbc.Driver";
-    final private String url =  "jdbc://localhost/clientes";
+    final private String driver= "com.mysql.cj.jdbc.Driver";
+    final private String url =  "jdbc:mysql://localhost/clientes";
     final private String usuario = "root"; 
     final private String senha = "";
     private Connection conexao;
@@ -28,7 +28,7 @@ public class Conexao {
             result = false;
         }
         catch(SQLException Fonte){
-            JOptionPane.showMessageDialog(null, "Fonte de dados não localizada!"+Fonte, "Mensagem do Programa", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Fonte de dados não localizada! "+Fonte, "Mensagem do Programa ", JOptionPane.INFORMATION_MESSAGE);
             result = false;
         }
      return result;
