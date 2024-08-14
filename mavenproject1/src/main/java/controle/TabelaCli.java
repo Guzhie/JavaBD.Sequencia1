@@ -199,6 +199,14 @@ public class TabelaCli extends JFrame {
         }
     }
     
+    public void posicionarRegistro(){ 
+        try {
+            con_cliente.resultset.first();
+            mostrar_Dados();
+            
+        } catch (SQLException erro) {
+JOptionPane.showMessageDialog(null,"Não foi possível posicionar no primeiro registro:"+erro,"Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);        }
+    }
     public void mostrar_Dados() {
         try {
             tCodigo.setText(con_cliente.resultset.getString("cod"));
