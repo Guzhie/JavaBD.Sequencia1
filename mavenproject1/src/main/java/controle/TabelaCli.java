@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.text.MaskFormatter;
+import javax.xml.crypto.Data;
+
 import java.sql.*;
 import conexao.Conexao;
 import javax.swing.table.DefaultTableModel;
@@ -14,9 +16,9 @@ public class TabelaCli extends JFrame {
     
     Conexao con_cliente;
     
-    JButton bprimei, banterior, bproximo, bultimo;
-    JLabel rCodigo, rNome, rEmail, rTel, rData;
-    JTextField tCodigo, tNome, tEmail;
+    JButton bprimei, banterior, bproximo, bultimo, bnovoregistro, bgravar ,balterar, bexluir, bpesquisar, bsair;
+    JLabel rCodigo, rNome, rEmail, rTel, rData, rpesquisar;
+    JTextField tCodigo, tNome, tEmail, tpesquisar;
     JFormattedTextField tel, data;
     MaskFormatter mTel, mData;
     
@@ -66,6 +68,29 @@ public class TabelaCli extends JFrame {
         rEmail.setBounds(30, 140, 100, 20);
         tEmail = new JTextField(50);
         tEmail.setBounds(120, 140, 200, 25);
+
+        rpesquisar = new JLabel("Pesquisar por nome do Cliente:");
+        rpesquisar.setBounds(50,450, 190,20);
+        tpesquisar = new JTextField(50);
+        tpesquisar.setBounds(240,450,360,20);
+        bpesquisar = new JButton("Pesquisar");
+        bpesquisar.setBounds(610,450,100,20);
+        bpesquisar.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+               try{
+                   String pesquisa = "select * from tbclientes where nome like '" +tpesquisar.getText() +"%'";
+                   con_cliente.executaSQL(pesquisa);
+                   
+                   if(con_cliente.resultset.first()){
+                       preencherTabela();
+                   }
+                   else{
+                       JOptionPane.showMessageDialog(null,"\n Não existe dados com este pramêtro!!","Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+                   }
+               }catch(SQLException errosql){
+                   JOptionPane.showMessageDialog(null,"\n Os dados digitados não  foram localizados!! :\n"+errosql,"Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+               }
+            }});
         
         bprimei = new JButton("Primeiro");
         bprimei.setBounds(30, 180, 100, 20);
@@ -79,7 +104,7 @@ public class TabelaCli extends JFrame {
                 }
             }
         });
-
+ 
         banterior = new JButton("Anterior");
         banterior.setBounds(130, 180, 100, 20);
         banterior.addActionListener(new ActionListener() {
@@ -121,6 +146,102 @@ public class TabelaCli extends JFrame {
             }
         });
         
+        bnovoregistro = new JButton("Novo Registro");
+        bnovoregistro.setBounds(600, 180, 140, 20);
+        bnovoregistro.addActionListener( new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                tCodigo.setText("");
+                tNome.setText("");
+                data.setText("");
+                tel.setText("");
+                tEmail.setText("");
+                tCodigo.requestFocus();
+        }});
+
+        bgravar = new JButton("Gravar");
+        bgravar.setBounds(600,200,140,20);
+        bgravar.addActionListener( new ActionListener(){
+        public void actionPerformed(ActionEvent e){
+           String nome = tNome.getText();
+           String dt_nasc = data.getText();
+           String telefone = tel.getText();
+           String email = tEmail.getText();
+           
+           try{
+               String insert_sql="insert into tbclientes (nome,telefone,email,dt_nasc) values ('" +nome+ "','" +telefone+ "','" +email+ "','" +dt_nasc + "')";
+               con_cliente.statement.executeUpdate(insert_sql);
+               JOptionPane.showMessageDialog(null, "Gravação realizada com sucesso!!","Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+               
+               con_cliente.executaSQL("select * from tbclientes order by cod");
+               preencherTabela();
+               
+           }catch(SQLException errosql){
+               JOptionPane.showMessageDialog(null,"\n Erro na Gravação :\n"+errosql,"Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+           }
+        }});
+
+        balterar = new JButton("Alterar");
+        balterar.setBounds(600,220,140,20);
+        balterar.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+               String nome = tNome.getText();
+               String dt_nasc = data.getText();
+               String telefone = tel.getText();
+               String email = tEmail.getText();
+               String sql;
+               String msg="";
+               
+               try{
+                   if(tCodigo.getText().equals("")){
+                       sql="insert into tbclientes (nome,telefone,email,dt_nasc) values ('" + nome + "','" + telefone + "','" + email + "','" + dt_nasc + "')";
+                       msg="Gravação de um novo registro";
+                   }else{
+                       sql="Update tbclientes set nome='" + nome + "', telefone='" + telefone + "', email='" + email + "', dt_nasc='" +dt_nasc + "'where cod="+tCodigo.getText();
+                       msg= "Alteração de registro";
+                   }
+                   
+                   con_cliente.statement.executeUpdate(sql);
+                   JOptionPane.showMessageDialog(null, "Gravação realizada com sucesso!!","Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+                   
+                   con_cliente.executaSQL("select * from tbclientes order by cod");
+                   preencherTabela();
+               }catch(SQLException errosql){
+                   JOptionPane.showMessageDialog(null,"\n Erro na Gravação :\n"+errosql,"Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+               }
+            }});
+
+        bexluir = new JButton("Excluir");
+        bexluir.setBounds(600,240,140,20);
+        bexluir.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+               String sql="";
+               try{
+                   int resp = JOptionPane.showConfirmDialog(rootPane, "Deseja Excluir o registro: ","Confrimar Exclusão", JOptionPane.YES_NO_OPTION,3);
+                   if(resp==0){
+                       sql="delete from tbclientes where cod = "+tCodigo.getText();
+                       int excluir = con_cliente.statement.executeUpdate(sql);
+                       if(excluir == 1){
+                           JOptionPane.showMessageDialog(null, "Exclusão realizada com sucesso!!","Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+                           con_cliente.executaSQL("select * from tbclientes order by cod");
+                           con_cliente.resultset.first();
+                           preencherTabela();
+                           posicionarRegistro();
+                       }
+                   }else{
+                       JOptionPane.showMessageDialog(null, "Operação cancelada pelo usuário!!","Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+                   }
+               }catch(SQLException excecao){
+                   JOptionPane.showMessageDialog(null,"Erro na Exclusão: "+excecao,"Mensagem do Programa",JOptionPane.INFORMATION_MESSAGE);
+               }
+            }});
+
+        bsair = new JButton("Sair");
+        bsair.setBounds(620,490,80,20);
+        bsair.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                System.exit(0);
+            }});
+
         tela.add(rCodigo);
         tela.add(tCodigo);
         tela.add(rNome);
@@ -135,6 +256,14 @@ public class TabelaCli extends JFrame {
         tela.add(banterior);
         tela.add(bproximo);
         tela.add(bultimo);
+        tela.add(bnovoregistro);
+        tela.add(bgravar);
+        tela.add(balterar);
+        tela.add(bexluir);
+        tela.add(rpesquisar);
+        tela.add(tpesquisar);
+        tela.add(bpesquisar);
+        tela.add(bsair);
         
         tblClientes = new JTable();
         scp_tabela = new JScrollPane(tblClientes);
@@ -171,6 +300,7 @@ public class TabelaCli extends JFrame {
         
         con_cliente.executaSQL("SELECT * FROM tbclientes ORDER BY cod");
         preencherTabela();
+        posicionarRegistro();
     }
     
     public void preencherTabela() {
