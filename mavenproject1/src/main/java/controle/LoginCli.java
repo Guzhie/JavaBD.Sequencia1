@@ -15,7 +15,7 @@ public class LoginCli extends JFrame{
     
     Conexao con_cliente;
     JPasswordField tSenha;
-    JLabel rUsuario, rSenha, rTitulo;
+    JLabel rUsuario, rSenha, rTitulo, rAluno;
     JTextField tUsuario;
     JButton bLogar;
     
@@ -27,6 +27,9 @@ public class LoginCli extends JFrame{
         setTitle("Login de Acesso");
         Container tela = getContentPane();
         setLayout(null);
+
+        rAluno = new JLabel("Gustavo Henrique - 2°DS AMS - Tarde");
+        rAluno.setBounds(20, 320, 400,10);
 
         rTitulo = new JLabel("Acceso ao Sistema");
         rTitulo.setBounds(210, 20, 150,50);
@@ -73,8 +76,9 @@ public class LoginCli extends JFrame{
         tela.add(tUsuario);
         tela.add(tSenha);
         tela.add(bLogar);
+        tela.add(rAluno);
 
-        setSize(600, 400);
+        setSize(550, 400);
         setVisible(true);
         setLocationRelativeTo(null);
     }
