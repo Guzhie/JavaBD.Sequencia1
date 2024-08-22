@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class TabelaCliMain {
     public static void main(String[] args) {
-        TabelaCli app = new TabelaCli(); 
+        LoginCli app = new LoginCli(); 
         app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
