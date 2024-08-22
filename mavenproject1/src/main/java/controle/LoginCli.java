@@ -51,7 +51,7 @@ public class LoginCli extends JFrame{
 
                     if (con_cliente.resultset.first()) {
                         TabelaCli mostra = new TabelaCli();
-                        mostra.setVisible(true);
+                           mostra.setVisible(true);
                         dispose();
                     }
                     else{
